@@ -77,7 +77,7 @@ install(
 
 install(
     FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/MyMod.esp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dist/MyMod.esp"
         "${CMAKE_CURRENT_BINARY_DIR}/MyMod.bsa"
     DESTINATION "."
 )
