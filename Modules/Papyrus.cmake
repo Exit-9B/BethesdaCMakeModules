@@ -61,6 +61,14 @@ function(add_papyrus PAPYRUS_TARGET)
 		)
 	endforeach()
 
+	set(_DUMMY "${CMAKE_CURRENT_BINARY_DIR}/${PAPYRUS_TARGET}.stamp")
+	add_custom_command(
+		OUTPUT "${_DUMMY}"
+		DEPENDS ${PAPYRUS_OUTPUT}
+		COMMAND "${CMAKE_COMMAND}" -E touch "${_DUMMY}"
+		VERBATIM
+	)
+
 	if (PAPYRUS_ANONYMIZE)
 		find_program(PEXANON_PATH AFKPexAnon PATHS "tools/AFKPexAnon")
 		if(NOT PEXANON_PATH)
@@ -88,13 +96,8 @@ function(add_papyrus PAPYRUS_TARGET)
 			set(PEXANON_PATH "${CMAKE_CURRENT_BINARY_DIR}/tools/AFKPexAnon/AFKPexAnon.exe")
 		endif()
 
-		# Anonymize command needs to be appended to the last command and depend on the rest
-		set(ANONYMIZE_DEPENDS ${PAPYRUS_OUTPUT})
-		list(POP_BACK ANONYMIZE_DEPENDS ANONYMIZE_OUTPUT)
-
 		add_custom_command(
-			OUTPUT "${ANONYMIZE_OUTPUT}"
-			DEPENDS ${ANONYMIZE_DEPENDS}
+			OUTPUT "${_DUMMY}"
 			COMMAND "${PEXANON_PATH}"
 				-s "${PAPYRUS_OUTPUT_DIR}"
 			VERBATIM APPEND
@@ -103,7 +106,7 @@ function(add_papyrus PAPYRUS_TARGET)
 
 	add_custom_target(
 		"${PAPYRUS_TARGET}" ALL
-		DEPENDS ${PAPYRUS_OUTPUT}
+		DEPENDS "${_DUMMY}"
 		SOURCES ${PAPYRUS_SOURCES}
 	)
 
