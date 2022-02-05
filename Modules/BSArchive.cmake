@@ -43,7 +43,7 @@ function(bethesda_archive BSARCHIVE_TARGET)
 	if(NOT BSARCH_PATH)
 		file(
 			DOWNLOAD
-			"https://github.com/TES5Edit/TES5Edit/raw/dev/Tools/BSArchive/bsarch.exe"
+			"https://github.com/TES5Edit/TES5Edit/raw/b3235062f275a7d4a94162af910923ba79f0e77a/Tools/BSArchive/bsarch.exe"
 			"${CMAKE_CURRENT_BINARY_DIR}/tools/bsarch.exe"
 		)
 
