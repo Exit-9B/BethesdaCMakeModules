@@ -16,7 +16,7 @@ The following modules are available:
 ### BSArchive
 ```
 bethesda_archive(<target> OUTPUT <file>
-                 FORMAT <TES3 | TES4 | FO3 | FNV | TES5 | SSE | FO4 | FO4DDS>
+                 FORMAT <TES3|TES4|FO3|FNV|TES5|SSE|FO4|FO4DDS>
                  FILES <file> [...]
                  [PREFIX <prefix>]
                  [ARCHIVE_FLAGS <value>]
