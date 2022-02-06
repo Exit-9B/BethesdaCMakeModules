@@ -6,7 +6,7 @@ Create BSA (Bethesda Games Studios Archive) files
 
 Usage:
 
-..
+.. code-block:: cmake
 
   bethesda_archive(<target> OUTPUT <file>
                    FORMAT <TES3|TES4|FO3|FNV|TES5|SSE|FO4|FO4DDS>

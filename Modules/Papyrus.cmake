@@ -6,7 +6,7 @@ Compile Papyrus scripts
 
 Usage:
 
-..
+.. code-block:: cmake
 
   add_papyrus(<target> GAME <game_path>
               IMPORTS <import> ...
