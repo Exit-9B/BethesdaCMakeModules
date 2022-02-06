@@ -29,6 +29,34 @@ Example:
               OPTIMIZE ANONYMIZE)
 #]=======================================================================]
 
+macro(find_pexanon)
+	find_program(PEXANON_COMMAND "AFKPexAnon" PATHS "tools/AFKPexAnon")
+
+	if(NOT PEXANON_COMMAND)
+		set(PEXANON_DOWNLOAD "${CMAKE_CURRENT_BINARY_DIR}/download/AFKPexAnon-1.1.0-x64.7z")
+
+		file(DOWNLOAD
+			"https://github.com/namralkeeg/AFKPexAnon/releases/download/v1.1.0/AFKPexAnon-1.1.0-x64.7z"
+			"${PEXANON_DOWNLOAD}"
+			EXPECTED_HASH MD5=79d646d42bd4d5a1a4cfc63ef00d004a
+			STATUS PEXANON_STATUS
+		)
+
+		list(GET PEXANON_STATUS 0 PEXANON_ERROR_CODE)
+		if(PEXANON_ERROR_CODE)
+			list(GET PEXANON_STATUS 1 PEXANON_ERROR_MESSAGE)
+			message(FATAL_ERROR "${PEXANON_ERROR_MESSAGE}")
+		endif()
+
+		file(ARCHIVE_EXTRACT
+			INPUT "${PEXANON_DOWNLOAD}"
+			DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/tools/AFKPexAnon"
+		)
+
+		set(PEXANON_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/tools/AFKPexAnon/AFKPexAnon.exe")
+	endif()
+endmacro()
+
 function(add_papyrus PAPYRUS_TARGET)
 	set(options OPTIMIZE ANONYMIZE)
 	set(oneValueArgs GAME)
@@ -61,7 +89,7 @@ function(add_papyrus PAPYRUS_TARGET)
 		)
 	endforeach()
 
-	set(_DUMMY "${CMAKE_CURRENT_BINARY_DIR}/${PAPYRUS_TARGET}.stamp")
+	set(_DUMMY "${CMAKE_CURRENT_BINARY_DIR}/_Papyrus/${PAPYRUS_TARGET}.stamp")
 	add_custom_command(
 		OUTPUT "${_DUMMY}"
 		DEPENDS ${PAPYRUS_OUTPUT}
@@ -70,42 +98,19 @@ function(add_papyrus PAPYRUS_TARGET)
 	)
 
 	if (PAPYRUS_ANONYMIZE)
-		find_program(PEXANON_PATH AFKPexAnon PATHS "tools/AFKPexAnon")
-		if(NOT PEXANON_PATH)
-			set(PEXANON_DOWNLOAD "${CMAKE_CURRENT_BINARY_DIR}/download/AFKPexAnon-1.1.0-x64.7z")
-
-			file(
-				DOWNLOAD
-				"https://github.com/namralkeeg/AFKPexAnon/releases/download/v1.1.0/AFKPexAnon-1.1.0-x64.7z"
-				"${PEXANON_DOWNLOAD}"
-				EXPECTED_HASH MD5=79d646d42bd4d5a1a4cfc63ef00d004a
-				STATUS DOWNLOAD_STATUS
-			)
-
-			if(DOWNLOAD_STATUS)
-				list(GET DOWNLOAD_STATUS 1 DOWNLOAD_ERROR)
-				message(FATAL_ERROR "${DOWNLOAD_ERROR}")
-			endif()
-
-			file(
-				ARCHIVE_EXTRACT
-				INPUT "${PEXANON_DOWNLOAD}"
-				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/tools/AFKPexAnon"
-			)
-
-			set(PEXANON_PATH "${CMAKE_CURRENT_BINARY_DIR}/tools/AFKPexAnon/AFKPexAnon.exe")
-		endif()
+		find_pexanon()
 
 		add_custom_command(
 			OUTPUT "${_DUMMY}"
-			COMMAND "${PEXANON_PATH}"
-				-s "${PAPYRUS_OUTPUT_DIR}"
-			VERBATIM APPEND
+			COMMAND "${PEXANON_COMMAND}" -s "${PAPYRUS_OUTPUT_DIR}"
+			VERBATIM
+			APPEND
 		)
 	endif()
 
 	add_custom_target(
-		"${PAPYRUS_TARGET}" ALL
+		"${PAPYRUS_TARGET}"
+		ALL
 		DEPENDS "${_DUMMY}"
 		SOURCES ${PAPYRUS_SOURCES}
 	)

@@ -28,6 +28,27 @@ Example:
                    FILES ${Papyrus_OUTPUT})
 #]=======================================================================]
 
+macro(find_bsarch)
+	find_program(BSARCH_COMMAND "bsarch" PATHS "tools")
+
+	if(NOT BSARCH_COMMAND)
+		file(DOWNLOAD
+			"https://github.com/TES5Edit/TES5Edit/raw/b3235062f275a7d4a94162af910923ba79f0e77a/Tools/BSArchive/bsarch.exe"
+			"${CMAKE_CURRENT_BINARY_DIR}/tools/bsarch.exe"
+			EXPECTED_HASH MD5=fb37aa274fa3756756012644c9fe8636
+			STATUS BSARCH_STATUS
+		)
+
+		list(GET BSARCH_STATUS 0 BSARCH_ERROR_CODE)
+		if(BSARCH_ERROR_CODE)
+			list(GET BSARCH_STATUS 1 BSARCH_ERROR_MESSAGE)
+			message(FATAL_ERROR "${BSARCH_ERROR_MESSAGE}")
+		endif()
+
+		set(BSARCH_COMMAND "${CMAKE_CURRENT_BINARY_DIR}/tools/bsarch.exe")
+	endif()
+endmacro()
+
 function(bethesda_archive BSARCHIVE_TARGET)
 	set(options COMPRESS SHARE)
 	set(oneValueArgs OUTPUT FORMAT ARCHIVE_FLAGS FILE_FLAGS)
@@ -35,22 +56,12 @@ function(bethesda_archive BSARCHIVE_TARGET)
 	cmake_parse_arguments(BSARCHIVE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	cmake_path(ABSOLUTE_PATH BSARCHIVE_OUTPUT BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-	list(APPEND BSARCHIVE_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+	list(APPEND BSARCHIVE_PREFIX "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 	list(REMOVE_DUPLICATES BSARCHIVE_PREFIX)
 
-	find_program(BSARCH_PATH bsarch "tools")
+	find_bsarch()
 
-	if(NOT BSARCH_PATH)
-		file(
-			DOWNLOAD
-			"https://github.com/TES5Edit/TES5Edit/raw/b3235062f275a7d4a94162af910923ba79f0e77a/Tools/BSArchive/bsarch.exe"
-			"${CMAKE_CURRENT_BINARY_DIR}/tools/bsarch.exe"
-		)
-
-		set(BSARCH_PATH "${CMAKE_CURRENT_BINARY_DIR}/tools/bsarch.exe")
-	endif()
-
-	set(BSARCHIVE_TEMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/temp_bsarch")
+	set(BSARCHIVE_TEMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/_BSArchive")
 
 	foreach(INPUT_FILE IN ITEMS ${BSARCHIVE_FILES})
 		cmake_path(GET INPUT_FILE RELATIVE_PART ARCHIVE_PATH)
@@ -68,8 +79,7 @@ function(bethesda_archive BSARCHIVE_TARGET)
 			endif()
 		endforeach()
 
-		cmake_path(
-			APPEND
+		cmake_path(APPEND
 			BSARCHIVE_TEMP_DIR "${ARCHIVE_PATH}"
 			OUTPUT_VARIABLE OUTPUT_FILE
 		)
@@ -87,7 +97,7 @@ function(bethesda_archive BSARCHIVE_TARGET)
 
 	add_custom_command(
 		OUTPUT "${BSARCHIVE_OUTPUT}"
-		COMMAND "${BSARCH_PATH}" pack
+		COMMAND "${BSARCH_COMMAND}" pack
 			"${BSARCHIVE_TEMP_DIR}"
 			"${BSARCHIVE_OUTPUT}"
 			$<$<STREQUAL:$<UPPER_CASE:${BSARCHIVE_FORMAT}>,TES3>:-tes3>
