@@ -145,13 +145,13 @@ install(
 file(
     DOWNLOAD
     "https://github.com/Exit-9B/MCM-Helper/releases/download/v1.3.2/MCM.SDK.zip"
-    "${CMAKE_CURRENT_BUILD_DIR}/download/MCM.SDK.zip"
+    "${CMAKE_CURRENT_BINARY_DIR}/download/MCM.SDK.zip"
 )
 
 file(
     ARCHIVE_EXTRACT
-    INPUT "${CMAKE_CURRENT_BUILD_DIR}/download/MCM.SDK.zip"
-    DESTINATION "${CMAKE_CURRENT_BUILD_DIR}/tools/MCM_SDK"
+    INPUT "${CMAKE_CURRENT_BINARY_DIR}/download/MCM.SDK.zip"
+    DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/tools/MCM_SDK"
 )
 
 file(GLOB ${PROJECT_NAME}_SOURCES
@@ -164,7 +164,7 @@ add_papyrus(
     "${PROJECT_NAME}"
     GAME "${Skyrim64Path}"
     IMPORTS
-        "${CMAKE_CURRENT_BUILD_DIR}/tools/MCM_SDK/Source/Scripts"
+        "${CMAKE_CURRENT_BINARY_DIR}/tools/MCM_SDK/Source/Scripts"
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Scripts"
     SOURCES ${${PROJECT_NAME}_SOURCES}
     OPTIMIZE ANONYMIZE
