@@ -142,14 +142,12 @@ install(
 # ...
 
 # Download MCM Helper SDK
-file(
-    DOWNLOAD
+file(DOWNLOAD
     "https://github.com/Exit-9B/MCM-Helper/releases/download/v1.3.2/MCM.SDK.zip"
     "${CMAKE_CURRENT_BINARY_DIR}/download/MCM.SDK.zip"
 )
 
-file(
-    ARCHIVE_EXTRACT
+file(ARCHIVE_EXTRACT
     INPUT "${CMAKE_CURRENT_BINARY_DIR}/download/MCM.SDK.zip"
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/tools/MCM_SDK"
 )
