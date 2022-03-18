@@ -72,6 +72,8 @@ bethesda_archive(
     FILES ${Papyrus_OUTPUT}
 )
 
+add_dependencies("BSA" "Papyrus")
+
 install(
     FILES ${Papyrus_SOURCES}
     DESTINATION "Source/Scripts"
@@ -124,6 +126,8 @@ bethesda_archive(
     FORMAT SSE
     FILES ${${PROJECT_NAME}_OUTPUT}
 )
+
+add_dependencies("BSA" "${PROJECT_NAME}")
 
 install(
     FILES ${${PROJECT_NAME}_SOURCES}
