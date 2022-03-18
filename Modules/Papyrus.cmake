@@ -9,7 +9,7 @@ Usage:
 .. code-block:: cmake
 
   add_papyrus(<target> GAME <game_path>
-              [MODE <Skyrim|Fallout4>]
+              [MODE <Skyrim|SkyrimSE|Fallout4>]
               IMPORTS <import> ...
               SOURCES <source> ...
               [FLAGS <flags>]
@@ -73,17 +73,13 @@ function(add_papyrus PAPYRUS_TARGET)
 	set(multiValueArgs IMPORTS SOURCES)
 	cmake_parse_arguments(PAPYRUS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	if(NOT PAPYRUS_MODE)
-		set(PAPYRUS_MODE "Skyrim")
-	endif()
-
-	if(PAPYRUS_MODE STREQUAL "Skyrim")
-		set(IS_SKYRIM TRUE)
-	elseif(PAPYRUS_MODE STREQUAL "Fallout4")
+	if(PAPYRUS_MODE STREQUAL "Fallout4" OR EXISTS "${PAPYRUS_GAME}/Fallout4.exe")
 		set(IS_FALLOUT4 TRUE)
-	endif()
-
-	if(NOT IS_SKYRIM AND NOT IS_FALLOUT4)
+	elseif(PAPYRUS_MODE STREQUAL "SkyrimSE" OR EXISTS "${PAPYRUS_GAME}/SkyrimSE.exe")
+		set(IS_SKYRIMSE TRUE)
+	elseif(PAPYRUS_MODE STREQUAL "Skyrim" OR EXISTS "${PAPYRUS_GAME}/TESV.exe")
+		set(IS_SKYRIM TRUE)
+	else()
 		message(FATAL_ERROR "Invalid add_papyrus mode specified.")
 	endif()
 
@@ -91,11 +87,9 @@ function(add_papyrus PAPYRUS_TARGET)
 	list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_IMPORTS}")
 	if(NOT PAPYRUS_SKIP_DEFAULT_IMPORTS)
 		if(IS_SKYRIM)
-			if(EXISTS "${PAPYRUS_GAME}/SkyrimSE.exe")
-				list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_GAME}/Data/Source/Scripts")
-			else()
-				list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_GAME}/Data/Scripts/Source")
-			endif()
+			list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_GAME}/Data/Scripts/Source")
+		elseif(IS_SKYRIMSE)
+			list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_GAME}/Data/Source/Scripts")
 		elseif(IS_FALLOUT4)
 			list(APPEND PAPYRUS_IMPORT_DIR
 				"${PAPYRUS_GAME}/Data/Scripts/Source/User"
@@ -118,7 +112,7 @@ function(add_papyrus PAPYRUS_TARGET)
 	if(PAPYRUS_FLAGS)
 		string(APPEND PAPYRUS_FLAGS_ARG ${QUOTE_LITERAL} "${PAPYRUS_FLAGS}" ${QUOTE_LITERAL})
 	else()
-		if(IS_SKYRIM)
+		if(IS_SKYRIM OR IS_SKYRIMSE)
 			string(APPEND PAPYRUS_FLAGS_ARG ${QUOTE_LITERAL} "TESV_Papyrus_Flags.flg" ${QUOTE_LITERAL})
 		elseif(IS_FALLOUT4)
 			string(APPEND PAPYRUS_FLAGS_ARG ${QUOTE_LITERAL} "Institute_Papyrus_Flags.flg" ${QUOTE_LITERAL})
