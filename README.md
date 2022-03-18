@@ -27,9 +27,11 @@ bethesda_archive(<target> OUTPUT <file>
 ### Papyrus
 ```
 add_papyrus(<target> GAME <game_path>
+            [MODE <Skyrim|Fallout4>]
             IMPORTS <import> ...
             SOURCES <source> ...
-            [OPTIMIZE] [ANONYMIZE])
+            [FLAGS <flag>]
+            [OPTIMIZE] [RELEASE] [FINAL] [VERBOSE] [ANONYMIZE] [SKIP_DEFAULT_IMPORTS])
 ```
 
 ## Examples
@@ -166,5 +168,25 @@ add_papyrus(
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/Scripts"
     SOURCES ${${PROJECT_NAME}_SOURCES}
     OPTIMIZE ANONYMIZE
+)
+```
+
+### Configuring for Fallout 4
+```cmake
+# Project setup
+# ...
+
+file(GLOB Papyrus_SOURCES
+    LIST_DIRECTORIES false
+    CONFIGURE_DEPENDS
+    "scripts/*.psc"
+)
+
+add_papyrus(
+    "Papyrus"
+    GAME ${Fallout4Path}
+    MODE "Fallout4"
+    IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts
+    SOURCES ${Papyrus_SOURCES}
 )
 ```
