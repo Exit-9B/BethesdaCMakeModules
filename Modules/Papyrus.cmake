@@ -48,7 +48,7 @@ macro(find_pexanon)
 		file(DOWNLOAD
 			"https://github.com/namralkeeg/AFKPexAnon/releases/download/v1.1.0/AFKPexAnon-1.1.0-x64.7z"
 			"${PEXANON_DOWNLOAD}"
-			EXPECTED_HASH MD5=79d646d42bd4d5a1a4cfc63ef00d004a
+			EXPECTED_HASH SHA3_224=48721850d462232f2b0e3da91055fbb014b88590a50dac36965c1143
 			STATUS PEXANON_STATUS
 		)
 

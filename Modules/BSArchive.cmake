@@ -35,7 +35,7 @@ macro(find_bsarch)
 		file(DOWNLOAD
 			"https://github.com/TES5Edit/TES5Edit/raw/b3235062f275a7d4a94162af910923ba79f0e77a/Tools/BSArchive/bsarch.exe"
 			"${CMAKE_CURRENT_BINARY_DIR}/tools/bsarch.exe"
-			EXPECTED_HASH MD5=fb37aa274fa3756756012644c9fe8636
+			EXPECTED_HASH SHA3_224=87e25b2c8b6c90c00d3a2141ec2130a97daa184aff5f2d3d6595c872
 			STATUS BSARCH_STATUS
 		)
 
