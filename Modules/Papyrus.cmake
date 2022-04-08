@@ -173,6 +173,7 @@ function(add_papyrus PAPYRUS_TARGET)
 		add_custom_command(
 			OUTPUT "${_DUMMY}"
 			COMMAND "${PEXANON_COMMAND}" -s "${PAPYRUS_OUTPUT_DIR}"
+			COMMAND "${CMAKE_COMMAND}" -E touch "${_DUMMY}"
 			VERBATIM
 			APPEND
 		)
