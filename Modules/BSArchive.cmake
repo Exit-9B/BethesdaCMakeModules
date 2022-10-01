@@ -8,13 +8,13 @@ Usage:
 
 .. code-block:: cmake
 
-  bethesda_archive(<target> OUTPUT <file>
-                   FORMAT <TES3|TES4|FO3|FNV|TES5|SSE|FO4|FO4DDS>
-                   FILES <file> [...]
-                   [PREFIX <prefix>]
-                   [ARCHIVE_FLAGS <value>]
-                   [FILE_FLAGS <value>]
-                   [COMPRESS] [SHARE])
+  BSArchive_Add(<target> OUTPUT <file>
+                FORMAT <TES3|TES4|FO3|FNV|TES5|SSE|FO4|FO4DDS>
+                FILES <file> [...]
+                [PREFIX <prefix>]
+                [ARCHIVE_FLAGS <value>]
+                [FILE_FLAGS <value>]
+                [COMPRESS] [SHARE])
 
 Example:
 
@@ -23,12 +23,12 @@ Example:
   set(Papyrus_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Scripts/MOD_Script1.pex
                      ${CMAKE_CURRENT_BINARY_DIR}/Scripts/MOD_Script2.pex)
 
-  bethesda_archive("BSA" OUTPUT "MyMod.bsa"
-                   FORMAT SSE
-                   FILES ${Papyrus_OUTPUT})
+  BSArchive_Add("BSA" OUTPUT "MyMod.bsa"
+                FORMAT SSE
+                FILES ${Papyrus_OUTPUT})
 #]=======================================================================]
 
-macro(find_bsarch)
+macro(BSArchive_FindBSArch)
 	find_program(BSARCH_COMMAND "bsarch" PATHS "tools")
 
 	if(NOT BSARCH_COMMAND)
@@ -49,7 +49,7 @@ macro(find_bsarch)
 	endif()
 endmacro()
 
-function(bethesda_archive BSARCHIVE_TARGET)
+function(BSArchive_Add BSARCHIVE_TARGET)
 	set(options COMPRESS SHARE)
 	set(oneValueArgs OUTPUT FORMAT ARCHIVE_FLAGS FILE_FLAGS)
 	set(multiValueArgs PREFIX FILES)
@@ -59,7 +59,7 @@ function(bethesda_archive BSARCHIVE_TARGET)
 	list(APPEND BSARCHIVE_PREFIX "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 	list(REMOVE_DUPLICATES BSARCHIVE_PREFIX)
 
-	find_bsarch()
+	BSArchive_FindBSArch()
 
 	set(BSARCHIVE_TEMP_DIR "${CMAKE_CURRENT_BINARY_DIR}/_BSArchive")
 

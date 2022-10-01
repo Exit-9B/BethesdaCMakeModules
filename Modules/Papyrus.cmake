@@ -8,7 +8,7 @@ Usage:
 
 .. code-block:: cmake
 
-  add_papyrus(<target> GAME <game_path>
+  Papyrus_Add(<target> GAME <game_path>
               [MODE <Skyrim|SkyrimSE|Fallout4>]
               IMPORTS <import> ...
               SOURCES <source> ...
@@ -24,7 +24,7 @@ Example:
 
 .. code-block:: cmake
 
-  add_papyrus("Papyrus"
+  Papyrus_Add("Papyrus"
               GAME $ENV{Skyrim64Path}
               IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts
                       $ENV{SKSE64Path}/Scripts/Source
@@ -32,7 +32,7 @@ Example:
                       ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MOD_Script2.psc
               OPTIMIZE ANONYMIZE)
 
-  add_papyrus("Papyrus"
+  Papyrus_Add("Papyrus"
               GAME $ENV{Fallout4Path}
               MODE Fallout4
               IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts
@@ -41,7 +41,7 @@ Example:
               OPTIMIZE RELEASE FINAL)
 #]=======================================================================]
 
-macro(find_pexanon)
+macro(Papyrus_FindPexAnon)
 	find_program(PEXANON_COMMAND "AFKPexAnon" PATHS "tools/AFKPexAnon")
 
 	if(NOT PEXANON_COMMAND)
@@ -69,7 +69,7 @@ macro(find_pexanon)
 	endif()
 endmacro()
 
-function(add_papyrus PAPYRUS_TARGET)
+function(Papyrus_Add PAPYRUS_TARGET)
 	set(options OPTIMIZE RELEASE FINAL VERBOSE ANONYMIZE SKIP_DEFAULT_IMPORTS)
 	set(oneValueArgs GAME MODE FLAGS COMPONENT)
 	set(multiValueArgs IMPORTS SOURCES)
@@ -82,7 +82,7 @@ function(add_papyrus PAPYRUS_TARGET)
 	elseif(PAPYRUS_MODE STREQUAL "Skyrim" OR EXISTS "${PAPYRUS_GAME}/TESV.exe")
 		set(IS_SKYRIM TRUE)
 	else()
-		message(FATAL_ERROR "Invalid add_papyrus mode specified.")
+		message(FATAL_ERROR "Invalid Papyrus_Add mode specified.")
 	endif()
 
 	set(QUOTE_LITERAL [=["]=])
@@ -170,7 +170,7 @@ function(add_papyrus PAPYRUS_TARGET)
 	)
 
 	if(PAPYRUS_ANONYMIZE)
-		find_pexanon()
+		Papyrus_FindPexAnon()
 
 		add_custom_command(
 			OUTPUT "${_DUMMY}"
