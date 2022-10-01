@@ -187,4 +187,7 @@ function(add_papyrus PAPYRUS_TARGET)
 	)
 
 	set("${PAPYRUS_TARGET}_OUTPUT" ${PAPYRUS_OUTPUT} PARENT_SCOPE)
+
+	source_group("Scripts" FILES ${PAPYRUS_SOURCES})
+
 endfunction()
