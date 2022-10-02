@@ -29,7 +29,7 @@ Example:
 #]=======================================================================]
 
 macro(BSArchive_FindBSArch)
-	find_program(BSARCH_COMMAND "bsarch" PATHS "tools")
+	find_program(BSARCH_COMMAND "bsarch" PATHS "tools" NO_CACHE)
 
 	if(NOT BSARCH_COMMAND)
 		file(DOWNLOAD

@@ -42,7 +42,7 @@ Example:
 #]=======================================================================]
 
 macro(Papyrus_FindPexAnon)
-	find_program(PEXANON_COMMAND "AFKPexAnon" PATHS "tools/AFKPexAnon")
+	find_program(PEXANON_COMMAND "AFKPexAnon" PATHS "tools/AFKPexAnon" NO_CACHE)
 
 	if(NOT PEXANON_COMMAND)
 		set(PEXANON_DOWNLOAD "${CMAKE_CURRENT_BINARY_DIR}/download/AFKPexAnon-1.1.0-x64.7z")
