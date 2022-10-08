@@ -15,23 +15,25 @@ The following modules are available:
 ## Module Usage
 ### BSArchive
 ```
-bethesda_archive(<target> OUTPUT <file>
-                 FORMAT <TES3|TES4|FO3|FNV|TES5|SSE|FO4|FO4DDS>
-                 FILES <file> [...]
-                 [PREFIX <prefix>]
-                 [ARCHIVE_FLAGS <value>]
-                 [FILE_FLAGS <value>]
-                 [COMPRESS] [SHARE])
+BSArchive_Add(<target> OUTPUT <file>
+              FORMAT <TES3|TES4|FO3|FNV|TES5|SSE|FO4|FO4DDS>
+              FILES <file> [...]
+              [PREFIX <prefix>]
+              [ARCHIVE_FLAGS <value>]
+              [FILE_FLAGS <value>]
+              [COMPRESS] [SHARE])
 ```
 
 ### Papyrus
 ```
-add_papyrus(<target> GAME <game_path>
-            [MODE <Skyrim|Fallout4>]
+Papyrus_Add(<target> GAME <game_path>
+            [MODE <Skyrim|SkyrimSE|Fallout4>]
             IMPORTS <import> ...
             SOURCES <source> ...
-            [FLAGS <flag>]
-            [OPTIMIZE] [RELEASE] [FINAL] [VERBOSE] [ANONYMIZE] [SKIP_DEFAULT_IMPORTS])
+            [FLAGS <flags>]
+            [COMPONENT] <component>
+            [OPTIMIZE] [RELEASE] [FINAL] [VERBOSE] [ANONYMIZE]
+            [SKIP_DEFAULT_IMPORTS])
 ```
 
 ## Examples
@@ -55,7 +57,7 @@ file(GLOB Papyrus_SOURCES
     "scripts/*.psc"
 )
 
-add_papyrus(
+Papyrus_Add(
     "Papyrus"
     GAME ${Skyrim64Path}
     IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts
@@ -65,7 +67,7 @@ add_papyrus(
 
 source_group("Scripts" FILES ${Papyrus_SOURCES})
 
-bethesda_archive(
+BSArchive_Add(
     "BSA"
     OUTPUT "MyMod.bsa"
     FORMAT SSE
@@ -110,7 +112,7 @@ file(GLOB ${PROJECT_NAME}_SOURCES
     "scripts/*.psc"
 )
 
-add_papyrus(
+Papyrus_Add(
     "${PROJECT_NAME}"
     GAME ${Skyrim64Path}
     IMPORTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts
@@ -120,7 +122,7 @@ add_papyrus(
 
 source_group("Scripts" FILES ${${PROJECT_NAME}_SOURCES})
 
-bethesda_archive(
+BSArchive_Add(
     "BSA"
     OUTPUT "MyMod.bsa"
     FORMAT SSE
@@ -164,7 +166,7 @@ file(GLOB ${PROJECT_NAME}_SOURCES
     "Source/Scripts/*.psc"
 )
 
-add_papyrus(
+Papyrus_Add(
     "${PROJECT_NAME}"
     GAME "${Skyrim64Path}"
     IMPORTS
@@ -186,7 +188,7 @@ file(GLOB Papyrus_SOURCES
     "scripts/*.psc"
 )
 
-add_papyrus(
+Papyrus_Add(
     "Papyrus"
     GAME ${Fallout4Path}
     MODE "Fallout4"
