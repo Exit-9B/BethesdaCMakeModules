@@ -41,6 +41,34 @@ Example:
               OPTIMIZE RELEASE FINAL)
 #]=======================================================================]
 
+macro(Papyrus_FindCaprica)
+	find_program(PAPYRUS_COMPILER "Caprica" PATHS "tools/Caprica" NO_CACHE)
+
+	if(NOT PAPYRUS_COMPILER)
+		set(CAPRICA_DOWNLOAD "${CMAKE_CURRENT_BINARY_DIR}/download/Caprica.v0.3.0.7z")
+
+		file(DOWNLOAD
+			"https://github.com/Orvid/Caprica/releases/download/v0.3.0/Caprica.v0.3.0.7z"
+			"${CAPRICA_DOWNLOAD}"
+			EXPECTED_HASH SHA3_224=4224c861424e8e4dc20ffc45cc605200035f897771af158c1459c021
+			STATUS CAPRICA_STATUS
+		)
+
+		list(GET CAPRICA_STATUS 0 CAPRICA_ERROR_CODE)
+		if(CAPRICA_ERROR_CODE)
+			list(GET CAPRICA_STATUS 1 CAPRICA_ERROR_MESSAGE)
+			message(FATAL_ERROR "${CAPRICA_ERROR_MESSAGE}")
+		endif()
+
+		file(ARCHIVE_EXTRACT
+			INPUT "${CAPRICA_DOWNLOAD}"
+			DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/tools/Caprica"
+		)
+
+		set(PAPYRUS_COMPILER "${CMAKE_CURRENT_BINARY_DIR}/tools/Caprica/Caprica.exe")
+	endif()
+endmacro()
+
 macro(Papyrus_FindPexAnon)
 	find_program(PEXANON_COMMAND "AFKPexAnon" PATHS "tools/AFKPexAnon" NO_CACHE)
 
@@ -75,19 +103,23 @@ function(Papyrus_Add PAPYRUS_TARGET)
 	set(multiValueArgs IMPORTS SOURCES)
 	cmake_parse_arguments(PAPYRUS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-	if(PAPYRUS_MODE STREQUAL "Fallout4" OR EXISTS "${PAPYRUS_GAME}/Fallout4.exe")
-		set(IS_FALLOUT4 TRUE)
+	if(PAPYRUS_MODE STREQUAL "Skyrim" OR EXISTS "${PAPYRUS_GAME}/TESV.exe")
+		set(IS_SKYRIM TRUE)
 	elseif(PAPYRUS_MODE STREQUAL "SkyrimSE" OR EXISTS "${PAPYRUS_GAME}/SkyrimSE.exe")
 		set(IS_SKYRIMSE TRUE)
-	elseif(PAPYRUS_MODE STREQUAL "Skyrim" OR EXISTS "${PAPYRUS_GAME}/TESV.exe")
-		set(IS_SKYRIM TRUE)
+	elseif(PAPYRUS_MODE STREQUAL "Fallout4" OR EXISTS "${PAPYRUS_GAME}/Fallout4.exe")
+		set(IS_FALLOUT4 TRUE)
+	elseif(PAPYRUS_MODE STREQUAL "Fallout76")
+		set(IS_FALLOUT76 TRUE)
+	elseif(PAPYRUS_MODE STREQUAL "Starfield")
+		set(IS_STARFIELD TRUE)
 	else()
 		message(FATAL_ERROR "Invalid Papyrus_Add mode specified.")
 	endif()
 
 	set(QUOTE_LITERAL [=["]=])
 	list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_IMPORTS}")
-	if(NOT PAPYRUS_SKIP_DEFAULT_IMPORTS)
+	if(PAPYRUS_GAME AND NOT PAPYRUS_SKIP_DEFAULT_IMPORTS)
 		if(IS_SKYRIM)
 			list(APPEND PAPYRUS_IMPORT_DIR "${PAPYRUS_GAME}/Data/Scripts/Source")
 		elseif(IS_SKYRIMSE)
@@ -121,29 +153,78 @@ function(Papyrus_Add PAPYRUS_TARGET)
 		endif()
 	endif()
 
-	string(
-		APPEND
-		PAPYRUS_COMPILER_ARGS
-		"-import=${PAPYRUS_IMPORT_ARG} -output=${PAPYRUS_OUTPUT_ARG} -flags=${PAPYRUS_FLAGS_ARG}")
+	if(PAPYRUS_GAME)
+		set(PAPYRUS_COMPILER "${PAPYRUS_GAME}/Papyrus Compiler/PapyrusCompiler.exe")
 
-	if(PAPYRUS_FINAL)
-		if(IS_FALLOUT4)
-			string(APPEND PAPYRUS_COMPILER_ARGS " -optimize -release -final")
-		else()
+		string(
+			APPEND
+			PAPYRUS_COMPILER_ARGS
+			"-import=${PAPYRUS_IMPORT_ARG} -output=${PAPYRUS_OUTPUT_ARG} -flags=${PAPYRUS_FLAGS_ARG}")
+
+		if(PAPYRUS_FINAL)
+			if(IS_FALLOUT4)
+				string(APPEND PAPYRUS_COMPILER_ARGS " -optimize -release -final")
+			else()
+				string(APPEND PAPYRUS_COMPILER_ARGS " -optimize")
+			endif()
+		elseif(PAPYRUS_RELEASE)
+			if(IS_FALLOUT4)
+				string(APPEND PAPYRUS_COMPILER_ARGS " -optimize -release")
+			else()
+				string(APPEND PAPYRUS_COMPILER_ARGS " -optimize")
+			endif()
+		elseif(PAPYRUS_OPTIMIZE)
 			string(APPEND PAPYRUS_COMPILER_ARGS " -optimize")
 		endif()
-	elseif(PAPYRUS_RELEASE)
-		if(IS_FALLOUT4)
-			string(APPEND PAPYRUS_COMPILER_ARGS " -optimize -release")
-		else()
-			string(APPEND PAPYRUS_COMPILER_ARGS " -optimize")
-		endif()
-	elseif(PAPYRUS_OPTIMIZE)
-		string(APPEND PAPYRUS_COMPILER_ARGS " -optimize")
-	endif()
 
-	if(NOT PAPYRUS_VERBOSE)
-		string(APPEND PAPYRUS_COMPILER_ARGS " -quiet")
+		if(NOT PAPYRUS_VERBOSE)
+			string(APPEND PAPYRUS_COMPILER_ARGS " -quiet")
+		endif()
+	else()
+		Papyrus_FindCaprica()
+
+		if(IS_SKYRIM OR IS_SKYRIMSE)
+			string(
+				APPEND
+				PAPYRUS_COMPILER_ARGS
+				"--game=skyrim"
+			)
+		elseif(IS_FALLOUT4)
+			string(
+				APPEND
+				PAPYRUS_COMPILER_ARGS
+				"--game=fallout4"
+			)
+		elseif(IS_FALLOUT76)
+			string(
+				APPEND
+				PAPYRUS_COMPILER_ARGS
+				"--game=fallout76"
+			)
+		elseif(IS_STARFIELD)
+			string(
+				APPEND
+				PAPYRUS_COMPILER_ARGS
+				"--game=starfield"
+			)
+		endif()
+
+		string(
+			APPEND
+			PAPYRUS_COMPILER_ARGS
+			" --import=${PAPYRUS_IMPORT_ARG} --output=${PAPYRUS_OUTPUT_ARG} --flags=${PAPYRUS_FLAGS_ARG}")
+
+		if(PAPYRUS_FINAL)
+			string(APPEND PAPYRUS_COMPILER_ARGS " --optimize --release --final")
+		elseif(PAPYRUS_RELEASE)
+			string(APPEND PAPYRUS_COMPILER_ARGS " --optimize")
+		elseif(PAPYRUS_OPTIMIZE)
+			string(APPEND PAPYRUS_COMPILER_ARGS " --optimize")
+		endif()
+
+		if(NOT PAPYRUS_VERBOSE)
+			string(APPEND PAPYRUS_COMPILER_ARGS " --quiet")
+		endif()
 	endif()
 
 	foreach(SOURCE IN ITEMS ${PAPYRUS_SOURCES})
@@ -154,7 +235,7 @@ function(Papyrus_Add PAPYRUS_TARGET)
 
 		add_custom_command(
 			OUTPUT "${OUTPUT_FILE}"
-			COMMAND "${PAPYRUS_GAME}/Papyrus Compiler/PapyrusCompiler.exe"
+			COMMAND "${PAPYRUS_COMPILER}"
 				"${SOURCE}"
 				"${PAPYRUS_COMPILER_ARGS}"
 			DEPENDS "${SOURCE}"
