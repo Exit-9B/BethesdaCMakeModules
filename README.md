@@ -11,6 +11,8 @@ The following modules are available:
   [BSArch](https://www.nexusmods.com/newvegas/mods/64745)).
 - **Papyrus**: Compiles Papyrus scripts (using Creation Kit, with optional
   anonymization using [AFKPexAnon](https://github.com/namralkeeg/AFKPexAnon)).
+- **Spriggit**: Deserializes BGS Data Files stored as plain text using
+  [Spriggit](https://github.com/Mutagen-Modding/Spriggit).
 
 ## Module Usage
 ### BSArchive
@@ -34,6 +36,13 @@ Papyrus_Add(<target> GAME <game_path>
             [COMPONENT] <component>
             [OPTIMIZE] [RELEASE] [FINAL] [VERBOSE] [ANONYMIZE]
             [SKIP_DEFAULT_IMPORTS])
+```
+
+### Spriggit
+```
+Spriggit_Deserialize(<target> INPUT <input_path> OUTPUT <output_path>
+                     [PACKAGE <nuget_package>] [COMPONENT] <component>
+                     [EXCLUDE_FROM_ALL])
 ```
 
 ## Examples
