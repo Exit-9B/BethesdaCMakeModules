@@ -21,9 +21,9 @@ function(Spriggit_Deserialize SPRIGGIT_TARGET)
 	cmake_parse_arguments(SPRIGGIT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	file(DOWNLOAD
-		https://github.com/Mutagen-Modding/Spriggit/releases/download/0.18/SpriggitCLI.zip
+		https://github.com/Mutagen-Modding/Spriggit/releases/download/0.41.0/SpriggitCLI.zip
 		"${CMAKE_CURRENT_BINARY_DIR}/download/SpriggitCLI.zip"
-		EXPECTED_HASH SHA512=602e23fb8543e9eaa233d9a4d6a095ba1f0ce51b859a95320535b4651bf386cb187caf4208ac4bfaff5d14b3f995437112e43eb4cf296cf814a164d4c822bef7
+		EXPECTED_HASH SHA512=c30ddf94ffe80f3a5db749bc656381d8f2a8114de6c991385b12509d35723464061f4b0b5e1df7d7958d2430c12ad8d4a00090f759662eb1ac2606f1d3fdd860
 	)
 
 	file(ARCHIVE_EXTRACT
